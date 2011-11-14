@@ -1,0 +1,61 @@
+/* This file will hold the main styles for your website. */
+
+/** 基本颜色 **/
+/*
+页面背景：#F5F5ED
+文字颜色：#4E4E4E
+链接颜色：#333
+红色：#E64135
+*/
+
+/*基本元素*/
+body {font-family:'Microsoft YaHei', SimSun, 'MS UI Gothic', Verdana;background-color: #F5F5ED;color:#4E4E4E;text-rendering:optimizeLegibility;-webkit-font-smoothing: antialiased;}
+
+h1, h2, h3, h4, h5, h6 {font-family:'Microsoft YaHei', SimSun, 'MS UI Gothic', Verdana;}
+h1 {font-size:20px;}
+h3 {
+font-size:15px;
+margin:0;
+}
+
+a{color: #333;text-decoration: none;}
+a:link {color: #333;text-decoration: none;}
+a:visited {color: #333333;text-decoration: none;}
+a:hover {color: #e64135;text-decoration: none;}
+a:active {color: #e64135;text-decoration: none;}
+
+input[type="text"] {
+	background: #fff; border: 1px solid #D3CEC8;
+	padding: 5px;
+	border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+}
+
+.item-list ul li {margin:0;}
+
+
+/*特殊装饰*/
+.cover img {padding:7px;background-color:#fff;}
+.zone-branding {margin:20px 0;}
+.zone-preface, .zone-content {border-bottom-width: 1px;border-bottom-color: #D3CEC8;border-bottom-style: dashed;margin-bottom:20px;}
+.zone-footer {background-color:#333;color:#696764;padding:20px 0 20px 0;}
+.zone-footer a:hover {color: #E64135;}
+.zone-footer a:link, .zone-footer a:active, .zone-footer a:visited {
+color: #B2B2A8;
+margin-right: 6px;
+margin-left: 6px;
+font-style: italic;
+}
+
+/*元素调整*/
+.form-item-search {display:inline;}
+.form-item-search input {color:#B2B2A8}
+.navigation {float:right;margin:10px 0;}
+.block-discography-search {float:right;}
+.album-main {}
+.album-main {width:100%;white-space:nowrap;overflow:hidden;-o-text-overflow:ellipsis; text-overflow:ellipsis;}
+.album-main .title {font-weight:bold;}
+.album-list {position: relative;padding-left:100px;border-bottom-width: 1px;border-bottom-color: #D3CEC8;border-bottom-style: dashed;padding-bottom:10px;margin-top:10px;}
+.album-list-cover {position:absolute;top:0;left:0;}
+.album-list-content {margin-left:10px;min-height:100px;}

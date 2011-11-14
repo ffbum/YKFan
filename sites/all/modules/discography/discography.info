@@ -1,0 +1,7 @@
+; $Id$
+name = Discography
+description = Discography.
+core = 7.x
+; stylesheets[all][] = discography.css
+
+version = "7.x-1.0"

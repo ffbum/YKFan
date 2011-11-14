@@ -1,0 +1,139 @@
+/*body {background:#d4e7f3;}*/
+div#wrapper {background:#fff;padding:0 10px;}
+
+.simple_box {
+	/*width:300px;*/
+	padding:10px;
+	background-color:#D9E6F7;
+	border:3px solid green;
+}
+
+#album-table .active {white-space:nowrap;font-weight:bold;}
+
+#discography-searchform-page form {text-align:center;margin-top:20px;}
+#discography-searchform-page #edit-keyword-wrapper {margin: 0;}
+#discography-searchform-page .form-radios .form-item {display:inline;}
+#discography-searchform-page .form-submit{margin:0;width:100px;line-height:1.5em;}
+
+#discography-searchform-inline form {margin-bottom:5px; text-align:right;}
+#discography-searchform-inline .form-item {display:inline;}
+#discography-searchform-inline #edit-keyword-wrapper {}
+#discography-searchform-inline .form-radios {display:none;}
+#discography-searchform-inline .form-submit{margin:0;width:80px;}
+
+
+#discography-lists {width:700px;height:50px;background-color:#EDF5FA;border:1px solid #B4D7F0;text-align:left;margin:20px auto;padding:5px;}
+#list-pages {text-align:center;}
+
+#album-left {float:left;width: 150px;text-align:center;}
+#album-left img {border:1px solid #b4d7f0;}
+#album-left .cover {text-align:center;}
+#album-left h3 {margin:5px 0;}
+#album-left .albuminfo {margin-bottom:20px;border-top:2px solid #B4D7F0;}
+#album-left .albuminfo span.blue {background-color:#EDF5FA;}
+#album-left .albuminfo span{border:1px solid #B4D7F0;border-width:0px 0 1px 0px;text-align:left;padding:4px 0;display:block;}
+#album-left .operation img {margin-bottom: 3px;}
+#album-right {float:left;border-left:1px solid #b4d7f0;padding:0 1em;width:780px;}
+
+#tabs-lyrics ul.ui-tabs-nav {margin-top:1em;}
+#tabs-lyrics ul.ui-tabs-nav li {border:1px solid #B4D7F0;}
+#tabs-lyrics ul.ui-tabs-nav li a {margin:0 0 0 10px;}
+#tabs-lyrics ul.ui-tabs-nav li.active {background-color:#EDF5FA;}
+#tabs-lyrics .ui-tabs-panel {border-top:1px solid #B4D7F0;}
+
+.album {padding:0 0 5px 0;width:100%;height:110px;border: 0px solid #000;}
+.album-list {border: 1px solid #B4D7F0;height:100px;border-width: 0px 0px 0px 0px;bacdskground-color:#EDF5FA;}
+.album-list-cover {float:left;width:100px;height:100px;border:0px solid #B4D7F0;margin:0 0px 0px 0;}
+.album-list-content {width: 860px;height:100px;float:left;background-color:#fff;padding-left:0px;}
+.album-list-content h3 {margin:0px 0;padding: 3px 5px;background-color:#D4E7F3;height:18px;}
+.album-list-content .description {padding-left:0.5em;margin-bottom:0.3em;}
+.album-list-content .brief {padding-left:0.5em;}
+.list-filters {text-align:right;margin-bottom:5px;}
+.list-filters form,.list-filters div {display:inline;}
+
+.track {padding-bottom:1em;}
+tr.track_none {color:#aaa}
+.track-list {border: 1px solid #B4D7F0;border-width: 0px 0px 0px 0px;margin: 0 0 10px 0;backgrsound-color:#EDF5FA;}
+.track-list-artists {padding:0.5em;}
+.track-list-title {background-color:#D4E7F3;padding:0.5em;}
+.track-list-title h3 {display:inline;}
+.track-list-title .lyric {float:right;}
+
+.recent-info {overflow:hidden;height:242px;margin:0;}
+
+#focusImg {background:#fff;width:240px;height:240px;padding:0px;margin:0;float:left;position:relative;border:#b4d7f0 1px solid;}
+#focusImg ol {margin:0;padding:0;margin:3px;}
+#focusImg ol li{width:234px;position:absolute;margin:0;z-index:0;display:none;}
+#focusImg ol li div{width:234px;height:234px;overflow:hidden;}
+#focusImg ol li img{width:234px;height:234px;}
+#focusImg ol li h3{position:absolute;top:171px;left:0;z-index:1;width:234px;font-size:1.3em;background:#c0ddf2;padding:10px 0 20px 0px;height:18px;filter:alpha(opacity=80);opacity:0.6;}
+#focusImg ol li h3 a {color:white;}
+#focusImg span{position:absolute;display:block;z-index:2;width:234px;height:14px;top:213px;right:3px;text-align:right;padding:0px;filter:alpha(opacity=60);opacity:0.6;}
+#focusImg span a{padding:1px 5px;margin-left:2px;text-decoration:none;background:#fff;color:#000;}
+#focusImg span a:hover,#focusImg span .a2{font-weight:bold;background:#000;color:#fff;}
+
+.news {margin:0 0 0 10px;width:703px;height:238px;border:1px solid #b4d7f0;float:left;border-width: 1px 0 1px 0;}
+.news h3 {margin:5px 0;color:rgb(0, 102, 153);}
+.news .item-title {width:590px;display:-moz-inline-box;display:inline-block;}
+.rss {text-align:right;padding:2px 0;}
+
+#subscribe {display:inline;}
+#subscribe ol {text-align:left;position: absolute;padding:10px;overflow-x: hidden; background:#EDF5FA;border: 1px solid #B4D7F0;overflow-y: hidden; display: none; left: 830px; top: 253px; opacity: 0.9;list-style-type:none;z-index:1;}
+
+.recent-albums {padding-buttom:10px;background-color:#EDF5FA;width:100%;height: 210px;border:1px solid #b4d7f0;border-width: 0px 1px 1px 1px;}
+.recent-albums h3{color:rgb(0, 102, 153);margin:0 0 10px 0;line-height:25px;height:25px;border-bottom:1px solid #b4d7f0;padding:0 5px 0 0;background-color:#D4E7F3;}
+.recent-albums h3 a {float:right;}
+.recent-albums .album {border:0px solid #adfaad;width:190px;float:left;text-align:center;}
+.recent-albums .album-main {height:140px;}
+.recent-albums .cover {width:100px; height:100px;background:white;border:1px solid #b4d7f0;margin: 0 auto;}
+
+.recent-help {text-align:right;}
+
+.compact-link {display:none;}
+
+#wrapper #header {padding:0px;}
+
+#keywords_wapper form {display:inline;}
+
+
+
+
+#header #logo img {padding-top:5px;}
+
+#profile {border:1px solid #b4d7f0;border-width:0 0 1px 0;height:104px;padding-bottom:1px;backgsround-color:#EDF5FA;clear:both; text-indent:2em;}
+#profile img {borsder:1px solid #b4d7f0;padding:2px;}
+
+
+#archive dt {background:url('/misc/menu-leaf.png') no-repeat 0;padding-left:10px;}
+
+#tabs-search_artists {margin-top:10px;}
+#tabs-search_artists ul li {background-color:#EDF5FA;padding:3px 0;margin:3px;display:block;width:80px;float:left;text-align:center;}
+
+.meta {line-height: 20px}
+
+#slideshow {width:140px;height:140px;border:3px solid #b4d7f0;margin:10px 6px 0 0;}
+
+#dialog_link {padding: .7em 1em;text-decoration: none;}
+
+.recent-albums {
+-webkit-border-bottom-left-radius: 10px;
+-webkit-border-bottom-right-radius: 10px;
+-moz-border-radius-bottomleft: 10px;
+-moz-border-radius-bottomright: 10px;
+}
+.album-info .blue {
+-webkit-border-top-left-radius: 10px;
+-webkit-border-bottom-left-radius: 10px;
+-moz-border-radius-bottomleft: 10px;
+-moz-border-radius-topleft: 10px;
+}
+.album-list-content h3, #discography-lists, #edit-keyword {
+-webkit-border-radius: 8px;
+-moz-border-radius: 8px;
+border-radius: 8px;
+}
+.track-list-title, .meta {
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border-radius: 5px;
+}

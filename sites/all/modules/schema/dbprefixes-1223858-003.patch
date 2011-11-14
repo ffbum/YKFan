@@ -1,0 +1,17 @@
+diff --git a/schema.module b/schema.module
+index 43f6ac3..95a5bba 100755
+--- a/schema.module
++++ b/schema.module
+@@ -132,9 +132,10 @@ function schema_phpprint_key($keys) {
+ 
+ function schema_unprefix_table($name) {
+   // TODO: Deal with D7 prefixing
+-  global $db_prefix;
++  global $databases;
+   static $_db_prefix;
+-
++  $db_prefix = $databases['default']['default']['prefix'];
++  
+   if (is_array($db_prefix)) {
+     if (!isset($_db_prefix)) {
+       foreach ($db_prefix as $key => $val) {

@@ -1,0 +1,702 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the Discography module.
+ */
+ 
+/**
+* Implements hook_help().
+*/
+function discography_schema() {
+  $schema['discography_album'] = array(
+    'description' => 'Album data table',
+    'fields' => array(
+      'aid' => array(
+        'description' => 'album id',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'title' => array(
+        'description' => 'album title',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => ''
+      ),
+      'pubdate' => array(
+        'description' => 'album publication date',
+        'type' => 'char',
+        'length' => 10,
+      ),
+      'pubcat' => array(
+        'description' => 'album publication cat',
+        'type' => 'varchar',
+        'length' => 16,
+      ),
+      'pubcom' => array(
+        'description' => 'album publication company',
+        'type' => 'varchar',
+        'length' => 50,
+      ),
+      'price' => array(
+        'description' => 'album price',
+        'type' => 'int',
+        'size' => 'medium',
+        'unsigned' => TRUE,
+      ),
+      'cover' => array(
+        'description' => 'If album has cover uploaded',
+        'type' => 'int',
+        'size' => 'tiny',
+      ),
+      'type' => array(
+        'description' => 'album type, single or album or others',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+      ),
+      'source' => array(
+        'description' => 'album source works',
+        'type' => 'varchar',
+        'length' => 255,
+      ),
+      'brief' => array(
+        'description' => 'album brief',
+        'type' => 'text',
+      ),
+      'path' => array(
+        'description' => 'album short path',
+        'type' => 'varchar',
+        'length' => 16,
+      ),
+      'booklet' => array(
+        'description' => 'album booklet path',
+        'type' => 'varchar',
+        'length' => 128,
+      ),
+      'comment' => array(
+        'description' => 'comment text to album',
+        'type' => 'text',
+      ),
+      'taobao' => array(
+        'description' => 'taobao url to this album',
+        'type' => 'varchar',
+        'length' => 128,
+      ),
+      'xiami' => array(
+        'description' => 'xiami id to this album',
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ),
+    ),
+    'unique keys' => array(
+      'path' => array('path'),
+    ),
+    'primary key' => array('aid'),
+  );
+  $schema['discography_track'] = array(
+    'fields' => array(
+      'aid' => array(
+        'description' => 'album id that track belong',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'did' => array(
+        'description' => 'disc id that track belong',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'tid' => array(
+        'description' => 'track index id',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'title' => array(
+        'description' => 'album title',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => ''
+      ),
+      'xiami' => array(
+        'description' => 'xiami id to this album',
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ),
+    ),
+    'indexes' => array(
+      'aid' => array('aid'),
+    ),
+    'primary key' => array('aid', 'did', 'tid'),
+  );
+  $schema['discography_artist'] = array(
+    'fields' => array(
+      'aid' => array(
+        'description' => 'album id that artist belong',
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ),
+      'did' => array(
+        'description' => 'disc id that artist belong',
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ),
+      'tid' => array(
+        'description' => 'track id that artist belong',
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ),
+      'name' => array(
+        'description' => 'artist name',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'duty' => array(
+        'description' => 'artist duty in this work',
+        'type' => 'varchar',
+        'length' => 16,
+      ),
+    ),
+    'indexes' => array(
+      'aid' => array('aid'),
+      'name' => array('name'),
+    ),
+  );
+  $schema['discography_lyric'] = array(
+    'fields' => array(
+      'lid' => array(
+        'description' => 'lyric index id',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'aid' => array(
+        'description' => 'album id that lyric belong',
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ),
+      'did' => array(
+        'description' => 'disc id that lyric belong',
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ),
+      'tid' => array(
+        'description' => 'track id that lyric belong',
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ),
+      'lyric' => array(
+        'description' => 'lyric content',
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => TRUE,
+      ),
+      'language' => array(
+        'description' => 'lyric language',
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+      ),
+      'moderate' => array(
+        'description' => 'if lyric being moderated',
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+      ),
+      'created' => array(
+        'description' => 'lyric created time',
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ),
+      'changed' => array(
+        'description' => 'lyric changed time',
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ),
+      'lrc' => array(
+        'description' => 'if lyric has lrc file uploaded',
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+      ),
+    ),
+    'indexes' => array(
+      'aid' => array('aid'),
+      'did' => array('did'),
+      'tid' => array('tid'),
+    ),
+    'primary key' => array('lid'),
+  );
+  $schema['discography_search_index'] = array(
+    'fields' => array(
+      'iid' => array(
+        'description' => 'search index id',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'title' => array(
+        'description' => 'index item title',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'type' => array(
+        'description' => 'index item type, album or track or artist',
+        'type' => 'varchar',
+        'length' => 16,
+      ),
+      'custom' => array(
+        'description' => 'index item custom index',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'keyword' => array(
+        'description' => 'keyword from title and custom',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'ids' => array(
+        'description' => 'item ids about this keyword',
+        'type' => 'text',
+      ),
+    ),
+    'indexes' => array(
+      'keyword' => array('keyword'),
+    ),
+    'primary key' => array('iid'),
+  );
+  
+  return $schema;
+}
+
+/**
+* Implements hook_install().
+*/
+function discography_install() {
+  // Create my tables.
+  drupal_install_schema('discography');
+}
+
+/**
+* Implements hook_uninstall().
+*/
+function discography_uninstall() {
+  // Drop my tables.
+  drupal_uninstall_schema('discography');
+}
+
+/**
+* Update from drupal 6.x to 7.x
+*/
+function discography_update_7100() {
+  // album
+  db_change_field('discography_album', 'pubdate', 'pubdate', array('type' => 'char', 'length' => 10));
+  db_change_field('discography_album', 'price', 'price', array('type' => 'int', 'size' => 'medium', 'unsigned' => TRUE));
+  db_change_field('discography_album', 'cover', 'cover', array('type' => 'int', 'size' => 'tiny'));
+  db_change_field('discography_album', 'brief', 'brief', array('type' => 'text'));
+  db_change_field('discography_album', 'path', 'path', array('type' => 'varchar', 'length' => 16));
+  db_change_field('discography_album', 'booklet', 'booklet', array('type' => 'varchar', 'length' => 128));
+  db_change_field('discography_album', 'taobao', 'taobao', array('type' => 'varchar', 'length' => 128));
+  db_add_field('discography_album', 'xiami', array(
+    'description' => 'xiami id to this album',
+    'type' => 'int',
+    'unsigned' => TRUE,
+  ));
+  db_drop_index('discography_album', 'title');
+  
+  // track
+  db_drop_primary_key('discography_track');
+  db_drop_index('discography_track', 'aid');
+  db_change_field('discography_track', 'aid', 'aid', 
+    array('type' => 'int', 'unsigned' => TRUE), 
+    array('indexes' => array('aid' => array('aid')))
+  );
+  db_change_field('discography_track', 'did', 'did', array('type' => 'int', 'unsigned' => TRUE));
+  db_change_field('discography_track', 'tid', 'tid', array('type' => 'int', 'unsigned' => TRUE));
+  db_add_field('discography_track', 'xiami', array(
+    'description' => 'xiami id to this album',
+    'type' => 'int',
+    'unsigned' => TRUE,
+  ));
+  db_drop_index('discography_track', 'title');
+  db_add_primary_key('discography_track', array('aid', 'did', 'tid'));
+  
+  // artist
+  db_drop_index('discography_artist', 'aid');
+  db_change_field('discography_artist', 'aid', 'aid', 
+    array('type' => 'int', 'unsigned' => TRUE),
+    array('indexes' => array('aid' => array('aid')))
+  );
+  db_change_field('discography_artist', 'did', 'did', array('type' => 'int', 'unsigned' => TRUE));
+  db_change_field('discography_artist', 'tid', 'tid', array('type' => 'int', 'unsigned' => TRUE));
+  db_change_field('discography_artist', 'duty', 'duty', array('type' => 'varchar', 'length' => 16));
+  
+  // lyric
+  db_drop_primary_key('discography_lyric');
+  db_change_field('discography_lyric', 'lid', 'lid', 
+    array('type' => 'serial', 'unsigned' => TRUE),
+    array('primary key' => array('lid'))
+  );
+  db_drop_index('discography_lyric', 'aid');
+  db_drop_index('discography_lyric', 'did');
+  db_drop_index('discography_lyric', 'tid');
+  db_change_field('discography_lyric', 'aid', 'aid', 
+    array('type' => 'int', 'unsigned' => TRUE),
+    array('indexes' => array('aid' => array('aid')))
+  );
+  db_change_field('discography_lyric', 'did', 'did', 
+    array('type' => 'int', 'unsigned' => TRUE),
+    array('indexes' => array('did' => array('did')))
+  );
+  db_change_field('discography_lyric', 'tid', 'tid', 
+    array('type' => 'int', 'unsigned' => TRUE),
+    array('indexes' => array('tid' => array('tid')))
+  );
+  db_change_field('discography_lyric', 'language', 'language', array('type' => 'int', 'size' => 'tiny', 'unsigned' => TRUE));
+  db_change_field('discography_lyric', 'moderate', 'moderate', array('type' => 'int', 'size' => 'tiny', 'unsigned' => TRUE));
+  db_change_field('discography_lyric', 'created', 'created', array('type' => 'int', 'unsigned' => TRUE));
+  db_change_field('discography_lyric', 'changed', 'changed', array('type' => 'int', 'unsigned' => TRUE));
+  db_change_field('discography_lyric', 'lrc', 'lrc', array('type' => 'int', 'size' => 'tiny', 'unsigned' => TRUE));
+  
+  // search index
+  db_add_field('discography_search_index', 'iid', array(
+    'description' => 'search index id',
+    'type' => 'serial',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
+  ), array('primary key' => array('iid')));
+  db_add_field('discography_search_index', 'ids', array(
+    'description' => 'item ids about this keyword',
+    'type' => 'text',
+    'not null' => TRUE,
+  ));
+  db_change_field('discography_search_index', 'type', 'type', array('type' => 'varchar', 'length' => 16));
+  db_add_index('discography_search_index', 'keyword', array('keyword'));
+  
+  // drop table
+  db_drop_table('discography_event');
+  
+  
+  return 'Discography module update finished!';
+  
+  throw new DrupalUpdateException('Discography update wrong!');
+}
+
+/**
+* Update node types discography list
+*/
+function discography_update_7101() {
+  $discography_list = array(
+    'type' => 'discography_list', 
+    'name' => 'Discography list',
+    'base' => 'node_content', 
+    'description' => 'Build a list of albums and tracks',
+    'has body' => FALSE,
+    'custom' => TRUE,
+  );
+  
+  $content_type = node_type_set_defaults($discography_list);
+  //node_add_body_field($content_type);
+  
+  node_type_save($content_type);
+  // set options
+  variable_set('node_preview_'.$discography_list['type'], DRUPAL_DISABLED);
+  variable_set('node_options_'.$discography_list['type'], array('status'));
+  variable_set('comment_'.$discography_list['type'], COMMENT_NODE_DISABLED);
+
+  foreach (_discography_list_installed_fields() as $field) {
+    field_create_field($field);
+  }
+
+  foreach (_discography_list_installed_instances() as $instance) {
+    $instance['entity_type'] = 'node';
+    $instance['bundle'] = $discography_list['type'];
+    field_create_instance($instance);
+  }
+  
+  return 'Discography list fields builded!';
+  
+  throw new DrupalUpdateException('Discography update wrong!');
+} 
+
+/**
+* define disocgraphy list fileds
+*/
+function _discography_list_installed_fields() {
+  return array(
+    'field_sqlwhere' => array(
+      'field_name' => 'field_sqlwhere', 
+      'type' => 'text',
+      'settings' => array(
+        'max_length' => 60,
+      ),
+    ), 
+    'field_sqlorder' => array(
+      'field_name' => 'field_sqlorder', 
+      'type' => 'text',
+      'settings' => array(
+        'max_length' => 60,
+      ),
+    ),
+    'field_nodelist' => array(
+      'field_name' => 'field_nodelist', 
+      'type' => 'text_long',
+    ),
+    'field_listtype' => array(
+      'field_name' => 'field_listtype', 
+      'settings' => array('allowed_values' => array('Album list', 'Track list')),
+      'type' => 'list_integer',
+    ), 
+    'field_body_header' => array(
+      'field_name' => 'field_body_header', 
+      'type' => 'text_long',
+    ),
+    'field_body_footer' => array(
+      'field_name' => 'field_body_footer', 
+      'type' => 'text_long',
+    ),
+  );
+}
+
+/**
+* define disocgraphy list fileds instances
+*/
+function _discography_list_installed_instances() {
+  return array(
+    'field_sqlwhere' => array(
+      'field_name' => 'field_sqlwhere', 
+      'label' => 'Mysql condition',
+      'description' => 'Mysql condition statment',
+      'widget' => array(
+        'type' => 'text_textfield',
+      ), 
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden', 
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+    'field_sqlorder' => array(
+      'field_name' => 'field_sqlorder', 
+      'label' => 'Mysql order',
+      'description' => 'Mysql order statment',
+      'widget' => array(
+        'type' => 'text_textfield',
+      ), 
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden', 
+          'type' => 'hidden',
+        ),
+      ),
+    ), 
+    'field_nodelist' => array(
+      'field_name' => 'field_nodelist', 
+      'label' => 'album node id list',
+      'description' => 'album node id list',
+      'widget' => array(
+        'type' => 'text_textarea',
+        'settings' => array(
+          'rows' => 6,
+        ),
+      ), 
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden', 
+          'type' => 'hidden',
+        ),
+      ),
+    ), 
+    'field_listtype' => array(
+      'field_name' => 'field_listtype', 
+      'label' => 'List type',
+      'description' => 'Select a list type, album or track.',
+      'default_value' => array(array('value' => 0)),
+      'required' => TRUE,
+      'widget' => array(
+        'type' => 'options_select',
+      ), 
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+    'field_body_header' => array(
+      'field_name' => 'field_body_header', 
+      'label' => 'List Header',
+      'description' => 'List header infomation',
+      'widget' => array(
+        'type' => 'text_textarea',
+      ), 
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden', 
+          'weight' => 1,
+        ),
+      ),
+    ), 
+    'field_body_footer' => array(
+      'field_name' => 'field_body_footer', 
+      'label' => 'List footer',
+      'description' => 'List footer infomation',
+      'widget' => array(
+        'type' => 'text_textarea',
+      ), 
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden', 
+          'weight' => 2,
+        ),
+      ),
+    ), 
+  );
+}
+
+/**
+* Update node types discography artist
+*/
+function discography_update_7102() {
+  $discography_artist = array(
+    'type' => 'discography_artist', 
+    'name' => 'Discography artist',
+    'base' => 'node_content', 
+    'description' => 'Create a artist page',
+    'body_label' => 'Artist brief',
+    'custom' => TRUE,
+  );
+  
+  $content_type = node_type_set_defaults($discography_artist);
+  node_add_body_field($content_type);
+  
+  node_type_save($content_type);
+  // set options
+  variable_set('node_options_'.$discography_artist['type'], array('status'));
+  variable_set('comment_'.$discography_artist['type'], COMMENT_NODE_READ_WRITE);
+  variable_set('node_submitted'.$discography_artist['type'], FALSE);
+
+  $body_instance = field_info_instance('node', 'body', 'discography_artist');
+  $body_instance['widget']['widget'] = 3;
+  field_update_instance($body_instance);
+  
+  foreach (_discography_artist_installed_fields() as $field) {
+    field_create_field($field);
+  }
+
+  foreach (_discography_artist_installed_instances() as $instance) {
+    $instance['entity_type'] = 'node';
+    $instance['bundle'] = $discography_artist['type'];
+    field_create_instance($instance);
+  }
+  
+  return 'Discography artist fields builded!';
+  
+  throw new DrupalUpdateException('Discography update wrong!');
+}
+
+/**
+* define disocgraphy artist fileds
+*/
+function _discography_artist_installed_fields() {
+  return array(
+    'field_aliasname' => array(
+      'field_name' => 'field_aliasname', 
+      'type' => 'text',
+      'settings' => array(
+        'max_length' => 60,
+      ),
+    ), 
+    'field_artist_photo' => array(
+      'field_name' => 'field_artist_photo', 
+      'type' => 'image',
+    ),
+  );
+}
+
+/**
+* define disocgraphy artist fileds instances
+*/
+function _discography_artist_installed_instances() {
+  return array(
+    'field_aliasname' => array(
+      'field_name' => 'field_aliasname', 
+      'label' => 'Alias name for artist',
+      'description' => 'Other name',
+      'widget' => array(
+        'type' => 'text_textfield',
+        'weight' => 1,
+      ), 
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+    'field_artist_photo' => array(
+      'field_name' => 'field_artist_photo', 
+      'label' => 'Artist photograhy',
+      'description' => 'Artist photography',
+      'widget' => array(
+        'type' => 'image_image',
+        'weight' => 2,
+      ),
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden', 
+          'type' => 'hidden',
+        ),
+      ),
+    ),  
+  );
+}
+
+/**
+* Convert 6.x disocgraphy data to 7.x
+*/
+function discography_update_7114() {
+  $result = db_query("SELECT * FROM {discography_list} l INNER JOIN {node} n ON l.nid=n.nid");
+  foreach ($result as $list) {
+    $node = node_load($list->nid);
+    $node->language = 'zh-hans';
+    $node->field_sqlwhere['zh-hans'][0]['value'] = $list->sqlwhere; 
+    $node->field_sqlorder['zh-hans'][0]['value'] = $list->sqlorderby;
+    $node->field_nodelist['zh-hans'][0]['value'] = $list->nodelist; 
+    $node->field_listtype['zh-hans'][0]['value'] = $list->listtype; 
+    $node->field_body_header['zh-hans'][0]['value'] = $list->body_header;
+    $node->field_body_footer['zh-hans'][0]['value'] = $list->body_footer;
+    node_save ($node);
+  }
+  
+  db_drop_table('discography_list');
+  
+  $node = node_load(4);
+  $node->type = discography_artist;
+  node_save($node);
+  
+  return 'Discography list data imported!';
+  
+  throw new DrupalUpdateException('Discography update wrong!');
+}
+/**
+* Update archive top page
+*/
+function discography_update_7115() {
+  $node = node_load(4);
+  $node->type = discography_artist;
+  node_save($node);
+  
+  return 'Discography archive page updated!';
+  
+  throw new DrupalUpdateException('Discography update wrong!');
+}

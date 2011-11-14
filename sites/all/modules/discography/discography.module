@@ -1,0 +1,1332 @@
+<?php
+// $Id: discography.module
+
+/**
+ * @file
+ * This the main module for ykfan discography mananage.
+ */
+
+
+/**
+ * Implements hook_help().
+ */
+function discography_help($path, $arg) {
+  switch ($path) {
+    case 'discography':
+      return t('This the main module for ykfan discography mananage.');
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+ 
+function discography_menu() {
+  //首页内容区
+  $items['top'] = array(
+    'title' => '',
+    'page callback' => 'discography_top_page',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  //文章RSS输出
+	$items['archive/feed'] = array(
+    'title' => '菅野よう子资料库',
+    'page callback' => 'discography_archive_feed_page',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  /*
+  //最近更新页面
+	$items['lastupdate'] = array(
+    'title' => '最近更新',
+    'page callback' => 'discography_lastupdate_page',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  //最近更新RSS输出
+	$items['lastupdate/feed'] = array(
+    'title' => '最近更新',
+    'page callback' => 'discography_lastupdate_feed_page',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  */
+  // 搜索相关页面
+  $items['discography'] = array(
+    'title' => ' 作品信息',
+    'page callback' => 'discography_page',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.search.inc',
+  );
+  $items['discography/search'] = array(
+    'title' => ' 搜索结果',
+    'page callback' => 'discography_search_page',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.search.inc',
+  );
+  /*
+  $items['discography/search/all/%'] = array(
+    'title' => ' 全部类别',
+    'access arguments' => TRUE,
+    
+    'page arguments' => array(3),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'file' => 'discography.search.inc',
+  );
+  $items['discography/search/album/%'] = array(
+    'title' => ' 搜索专辑',
+    'page callback' => 'discography_search_page',
+    'access arguments' => array('access content'),
+    'page arguments' => array(3),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'discography.search.inc',
+  );*/
+  // 歌词相关页面
+  $items['discography/lyric/all'] = array(
+    'title' => '全部歌词',
+    'page callback' => 'discography_lyric_page',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.lyric.inc',
+  );
+	$items['discography/lyric/feed'] = array(
+    'title' => '',
+    'page callback' => 'discography_lyric_feed_page',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.lyric.inc',
+  );
+  $items['discography/lyric/submit'] = array(
+    'title' => '',
+    'page callback' => 'discography_lyric_submit',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.lyric.inc',
+  );
+  $items['discography/lyric/post/%discography_album'] = array(
+    'title' => '提交歌词',
+    'page callback' => 'discography_lyric_post_page',
+    'page arguments' => array(3),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.lyric.inc',
+  );
+  $items['discography/lyric/edit/%discography_lyric'] = array(
+    'title' => '编辑歌词',
+    'page callback' => 'discography_lyric_edit_page',
+    'access arguments' => array('admin discography'),
+    'page arguments' => array(3),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.lyric.inc',
+  );
+  $items['discography/lyric/delete/%discography_lyric'] = array(
+    'title' => '删除歌词',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('discography_lyric_delete_confirm', 3),
+    'access arguments' => array('admin discography'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.lyric.inc',
+  );
+  $items['discography/lyric/moderate/%discography_lyric'] = array(
+    'title' => '审核歌词',
+    'page callback' => 'discography_lyric_moderate',
+    'page arguments' => array(3),
+    'access arguments' => array('admin discography'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.lyric.inc',
+  );
+  $items['discography/lyric/%discography_album/%/%'] = array(
+    'title' => '查看歌词',
+    'page callback' => 'discography_lyric_view',
+    'page arguments' => array(2, 3, 4),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.lyric.inc',
+  );
+
+  // 管理页面
+  $items['discography/admin'] = array(
+    'title' => '管理',
+    'page callback' => 'discography_admin_page',
+    'access callback' => 'user_is_logged_in',
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.admin.inc',
+  );
+  /*
+  $items['discography/admin/slide'] = array(
+    'title' => '首页滚动新闻管理',
+    'page callback' => 'drupal_get_form',
+		'page arguments' => array('discography_admin_slide_form'),
+    'access arguments' => array('admin ykfan'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.admin.inc',
+  );
+  */
+  $items['discography/admin/lyric'] = array(
+    'title' => '歌词管理',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('discography_admin_lyric_page'),
+    'access arguments' => array('admin discography'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.admin.inc',
+  );
+  $items['discography/admin/album'] = array(
+    'title' => '专辑管理',
+    'page callback' => 'discography_admin_album_page',
+    'access arguments' => array('admin discography'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.admin.inc',
+  );
+  $items['discography/admin/list'] = array(
+    'title' => '列表管理',
+    'page callback' => 'discography_admin_list_page',
+    'access arguments' => array('admin discography'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.admin.inc',
+  );
+  $items['discography/admin/comment'] = array(
+    'title' => '评论管理',
+    'page callback' => 'discography_admin_comment_page',
+    'access arguments' => array('admin ykfan'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.admin.inc',
+  );
+  $items['discography/admin/site-information'] = array(
+    'title' => '站点信息',
+    'page callback' => 'discography_admin_site_page',
+    'access arguments' => array('admin ykfan'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.admin.inc',
+  );
+  $items['discography/admin/site-maintenance'] = array(
+    'title' => '站点维护',
+    'page callback' => 'discography_admin_maintenance_page',
+    'access arguments' => array('admin ykfan'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.admin.inc',
+  );
+  $items['discography/admin/list/%node/sticky'] = array(
+    'title' => '',
+    'page callback' => 'discography_admin_list_sticky',
+    'page arguments' => array(3),
+    'access arguments' => array('admin discography'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.admin.inc',
+  );
+  $items['discography/admin/list/reset'] = array(
+    'page callback' => 'discography_admin_list_reset',
+    'access arguments' => array('admin discography'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.admin.inc',
+  );
+  $items['discography/admin/stat/reset'] = array(
+    'page callback' => 'discography_admin_stat_reset',
+    'access arguments' => array('admin ykfan'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.admin.inc',
+  );
+  $items['discography/admin/source'] = array(
+    'title' => '专辑出处设定',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('discography_admin_source'),
+    'access arguments' => array('admin discography'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.admin.inc',
+  );
+
+  // 专辑页面
+  $items['discography/%discography_path'] = array(
+    'page callback' => 'discography_album_page',
+    'page arguments' => array(1),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.album.inc',
+  );
+  $items['discography/album/add'] = array(
+    'title' => '新增专辑',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('discography_album_form'),
+    'access arguments' => array('admin discography'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.album.inc',
+  );
+  $items['discography/album/edit/%discography_album'] = array(
+    'title' => '编辑专辑',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('discography_album_form', 3),
+    'access arguments' => array('admin discography'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.album.inc',
+  );
+  $items['discography/album/delete/%discography_album'] = array(
+    'title' => '删除专辑',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('discography_album_delete_confirm', 3),
+    'access arguments' => array('admin discography'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.album.inc',
+  );
+  $items['discography/album/form/js'] = array(
+    'page callback' => 'discography_album_form_js',
+    'access arguments' => array('admin discography'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.album.inc',
+  );
+  $items['discography/album/export/%discography_album'] = array(
+    'title' => '导出专辑',
+    'page callback' => 'discography_album_export',
+    'page arguments' => array(3),
+    'access arguments' => array('admin discography'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.album.inc',
+  );
+  $items['discography/xiami/add/%discography_album'] = array(
+    'title' => '提交虾米地址',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('discography_xiami_add_form', 3),
+    'access arguments' => array('admin discography'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.album.inc',
+  );
+
+  //艺术家页面
+  $items['discography/artist/%'] = array(
+    'page callback' => 'discography_artist_page',
+    'page arguments' => array(2),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.artist.inc',
+  );
+
+  //索引页面
+  $items['discography/admin/keywords'] = array(
+    'title' => '关键词管理',
+    'page callback' => 'discography_keywords_page',
+    'access arguments' => array('admin discography'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.index.inc',
+  );
+  $items['discography/keywords/filter/js'] = array(
+    'page callback' => 'discography_keywords_filter_js',
+    'access arguments' => array('admin discography'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.index.inc',
+  );
+  $items['discography/keywords/albums/%/%'] = array(
+    'title' => '相关专辑',
+    'page callback' => 'discography_artist_page',
+    'page arguments' => array(3, 4),
+    'access arguments' => array('admin discography'),
+    'type' => MENU_CALLBACK,
+    'file' => 'discography.index.inc',
+  );
+  /*
+  $items['discography/ical'] = array(
+    'title' => 'Event ical feed',
+    'page callback' => 'discography_ical',
+    'access callback' => 'user_access',
+    'access arguments' => array('access content'),
+    'file' => 'ical.inc',
+    'type' => MENU_CALLBACK
+  );*/
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function discography_permission() {
+  return array(
+    'admin ykfan' => array(
+      'title' => '管理YKFan',
+      'description' => "管理YKFan后台操作",
+    ),
+    'admin discography' => array(
+      'title' => '管理曲目数据',
+      'description' => "管理曲目数据操作",
+    ),
+  );
+}
+
+
+/**
+ * Implementats hook_theme()
+ */
+function discography_theme() {
+  return array(
+    'discography_top_block' => array(
+      'render element' => 'contents',
+    ),
+    'discography_top_block_album' => array(
+      'render element' => 'contents',
+    ),
+    'discography_archive_page' => array(
+      'render element' => 'contents',
+    ),
+    'discography_page' => array(
+      'render element' => 'contents',
+    ),
+    'discography_search_page_list' => array(
+      'render element' => 'contents',
+    ),
+    'discography_search_page_all' => array(
+      'render element' => 'contents',
+    ),
+    'discography_search_album' => array(
+      'variables' => array('album' => NULL),
+    ),
+    'discography_search_track' => array(
+      'variables' => array('track' => NULL),
+    ),
+    'discography_search_artist' => array(
+      'variables' => array('artist' => NULL),
+    ),
+    'discography_search_lyric' => array(
+      'variables' => array('lyric' => NULL),
+    ),
+    'discography_panel' => array(
+      'variables' => array('blocks' => NULL, 'title' => '', 'type' => 'ul', 'attributes' => array()),
+    ),
+    'discography_album_list' => array(
+      'variables' => array('albums' => NULL),
+    ),
+    'discography_track_list' => array(
+      'variables' => array('tracks' => NULL),
+    ),
+    'discography_album_form' => array(
+      'render element' => 'form',
+    ),
+    'discography_tracks_form' => array(
+      'render element' => 'form',
+    ),
+    'discography_admin_slide_form' => array(
+      'render element' => 'form',
+    ),
+  );
+}
+
+/**
+* Implements hook_cron().
+ */
+function discography_cron() {
+}
+
+/**
+ * Load album data.
+ */
+function discography_album_load($aid) {
+  if (!is_numeric($aid)) {
+    return FALSE;
+  }
+  static $albums=array();
+  if (isset($albums[$aid])) {
+    return is_object($albums[$aid]) ? clone $albums[$aid] : $albums[$aid];
+  }
+  $track = array();
+  $artists = array();
+  $album = db_select('discography_album', 'a')->condition('a.aid', $aid)->fields('a')->execute()->fetchObject();
+  if ($album) {
+    $result = db_select('discography_artist', 'ar')->condition('ar.aid', $aid)->fields('ar')->execute();
+    while($artist = $result->fetch()) {
+      $artists[$artist->duty][$artist->did][$artist->tid][] = $artist->name;
+    }
+    $album->artist = implode(',', $artists['artist'][0][0]);
+    unset($artists['artist']);
+
+    $result = db_select('discography_track', 't')
+      ->condition('t.aid', $aid)
+      ->fields('t')
+      ->orderBy('did')
+      ->orderBy('tid')
+      ->execute();
+    $tracks = array();
+    while($track = $result->fetch()) {
+      $track->atitle = $album->title;
+      $track->path = $album->path;
+      
+      foreach($artists as $type => $names) {
+        if (isset($names[$track->did][$track->tid])) {  //分类设置曲目相关的艺术家
+          $track->$type = implode(',', $names[$track->did][$track->tid]);
+        } else {
+          $track->$type = '';
+        }
+      }
+      $tracks[$track->did][$track->tid] = $track;
+    }
+    $album->tracks = $tracks;
+  }
+  $albums[$aid] = $album;
+  return $album;
+}
+
+/*
+ * Load artist data. 
+ */
+function discography_artist_load($name) {
+  if (strlen($name) == 0) return NULL;
+
+  $query = db_select('discography_artist', 's')->fields('s')->condition('s.name', $name);
+  $result = $query->execute();
+  //print $query->__toString();
+  return $result->fetch();
+}
+
+/**
+* Load track data.
+*/
+/*
+function discography_track_load($track) {
+  if (!is_object($track)) {
+    return array();
+  }
+  $aid = $track->aid;
+  $did = $track->did;
+  $tid = $track->tid;
+
+  $result = db_query("SELECT a.title AS atitle, t.* FROM {discography_track} t INNERT JOIN {discography_album} a ON t.aid=a.aid WHERE t.aid=:aid AND t.did=:did AND t.tid=:tid", array(':aid' => $aid, ':did' => $did, ':tid' => $tid));
+
+  if (count($result) > 0) {
+    $track = $result[0];
+    $result = db_query("SELECT * FROM {discography_artist} WHERE aid=:aid AND did=:did AND tid=:tid", array(':aid' => $aid, ':did' => $did, ':tid' => $tid));
+    foreach ($result as $artist) {
+      $artists[$artist->duty][$artist->did][$artist->tid][] = $artist->name;
+    }
+    unset($artists['artist']);
+    foreach($artists as $type => $names) {
+      if (is_array($names[$track->did][$track->tid])) {
+        $track->$type = implode(',', $names[$track->did][$track->tid]);
+      }
+    }
+  }
+  return $track;
+}*/
+
+/**
+* Load lyric data.
+*/
+function discography_lyric_load($lid) {
+  if (!is_numeric($lid)) {
+    return FALSE;
+  }
+  $result = db_query("SELECT * FROM {discography_lyric} WHERE lid=:lid", array(':lid' => $lid));
+  if ($result->rowCount() > 0) {
+    return $result->fetch();
+  }
+  return FALSE;
+}
+
+/**
+* Load album path
+*/
+function discography_path_load($path) {
+  if (!preg_match("/^[a-zA-Z0-9]+$/i", $path)) {
+    return FALSE;
+  }
+  $aid = db_query("SELECT aid FROM {discography_album} WHERE path=:path", array(':path' => $path))->fetchField();
+  return discography_album_load($aid);
+}
+
+
+/**
+* Implements hook_form_alter().
+*/
+function discography_form_alter(&$form, &$form_state, $form_id) {
+  // 把拇指导航定义为管理主页
+  if ($form_id == 'story_node_form' || $form_id == 'page_node_form' || $form_id == 'discography_list_node_form') {
+    discography_set_admin_breadcrumb();
+  }
+}
+
+/**
+* Implements hook_ID_form_alter().
+*/
+function discography_form_discography_list_node_form_alter (&$form, &$form_state, $form_id) {
+  $form['preview'] = array(
+      '#value'=> '预览列表',
+      '#type' => 'button',
+      '#weight' => 5.5,
+      '#ajax' => array(
+        'callback' => 'discography_list_build_list_callback',
+        'wrapper' => 'body_wapper',
+        'method' => 'replace',
+        'effect' => 'fade',
+      ),
+    );
+    $form['body_list'] = array(
+      '#value' => '自动列表预览区',
+      '#prefix' => '<div id="body_wapper">',
+      '#suffix' => '</div>',
+      '#weight' => 6.5,
+    );
+}
+
+/**
+* Implements hook_ID_form_alter().
+*/
+function discography_form_discography_artist_node_form_alter (&$form, &$form_state, $form_id) {
+  $artist_name = isset($_GET['name']) ? $_GET['name'] : '';
+
+  $form['title']['#default_value'] = $artist_name;
+
+  // 读取可能的别名并添加到表单中
+
+}
+
+/**
+* AJAX callback of add list form to build list dynamic.
+*/
+function discography_list_build_list_callback($form, $form_state) {
+  $language = $form['#node']->language;
+  $sqlwhere = $form_state['values']['field_sqlwhere'][$language][0]['value'];
+  $sqlorder = $form_state['values']['field_sqlorder'][$language][0]['value'];
+  $nodelist = $form_state['values']['field_nodelist'][$language][0]['value'];
+  $listtype = $form_state['values']['field_listtype'][$language][0]['value'];
+  return array(
+    '#prefix' => '<div id="body_wapper">',
+    '#suffix' => '</div>',
+    'list' => discography_list_build_list($sqlwhere, $sqlorder, $nodelist, $listtype),
+  );
+}
+
+/**
+* Build a discography list with sql or list nid.
+*/
+function discography_list_build_list($sqlwhere, $sqlorderby, $nodelist, $listtype) {
+  if (!$sqlwhere && !$nodelist) {
+    return array('#markup' => '参数不正确！请至少指定过滤条件或者过滤列表。');
+  }
+
+  $items = array();
+  // 按指定的过滤查询列表
+  if ($nodelist) {
+    $lines = explode("\n", $nodelist);
+    foreach ($lines as $line) {
+      $line = trim($line);
+      if ($listtype == 0) {
+        if (is_numeric($line) && $album = discography_album_load($line)) {
+          $items[] = $album;
+        }
+      }
+      if ($listtype == 1) { //曲目列表
+        list($aid, $did, $tid) = explode(',', $line);
+        if (is_numeric($aid) && is_numeric($did) && is_numeric($tid) && $album = discography_album_load($aid)) {
+          $items[] = $album->tracks[$did][$tid];
+        }
+      }
+    }
+  } else {  // 按SQL条件查询列表
+    try {
+      if ($listtype == 0) {
+        $query = db_select('discography_album', 'a')->fields('a');
+        $query->innerJoin('discography_artist', 's', 's.aid=a.aid');
+        $query->condition('s.duty', 'artist');
+        $query->groupBy('a.aid');
+        $query->addExpression('GROUP_CONCAT(s.name)', 'artist');
+      } else {
+        $query = db_select('discography_track', 't')->fields('t', array('aid', 'did', 'tid'));
+        $query->innerJoin('discography_artist', 's', 's.aid=t.aid AND s.did=t.did AND s.tid=t.tid');
+      }
+      $query->where($sqlwhere);
+      $orders = explode(',', $sqlorderby);
+      foreach($orders as $order) {
+        $fieldsort = explode(' ', trim($order));explode(' ', trim($order));
+        if (isset($fieldsort[0]) && isset($fieldsort[1]))
+          $query->orderBy($fieldsort[0], $fieldsort[1]);
+        elseif (isset($fieldsort[1]))
+          $query->orderBy($fieldsort[1]);
+      }
+      $result = $query->execute();
+      if ($result->rowCount() == 0)
+        return array('#markup' => '没有符合的内容。');
+      $items = $result->fetchAll();
+    }
+    catch (Exception $e) {
+      return array('#markup' =>'SQL语句有错，请仔细检查。错误代码：【'. $e->getMessage() . '】');
+    }
+  }
+  if ($listtype == 0)
+    return array('#theme' => 'discography_album_list', '#albums' => $items);
+  if ($listtype == 1)
+    return array('#theme' => 'discography_track_list', '#tracks' => $items);
+}
+
+/**
+* Theme of album list page.
+*/
+function theme_discography_album_list($variables) {
+  $albums = $variables['albums'];
+  $output = '';
+  $count = 0;
+  $cover_path = 'public://covers/';
+  $album_types = array('album' => '专辑', 'single' => '单曲', 'unrealeased' => '未发行');
+  $source_options = variable_get('discography_album_sources', array('其它'));
+
+  foreach($albums as $album) {
+    $source = ($source_options[$album->source] ? $source_options[$album->source] : '其它');
+    $output .= '<div class="list album clearfix"><div class="album-list"><div class="album-list-cover" >';
+    if ($album->cover) {
+      $output .= l(theme('image_style', array('style_name' => 'thumbnail', 'path' => 'public://covers/cover_'.$album->aid.'.jpg', 'alt' => '专辑封面')), 'discography/'. $album->path, array('html' => TRUE));
+    } else {
+      $output .= l(theme('image', array('path' => 'public://covers/nocover_thumb.gif', 'alt' => '专辑封面')), 'discography/'. $album->path, array('html' => TRUE));
+    }
+    $output .= '</div>';
+
+    $output .= '<div class="album-list-content"><h3>'.l('['.$album_types[$album->type].'] '.$album->title, 'discography/'.$album->path).'</h3>';
+    $output .= '<div class="description">专辑艺术家：<span class="artist">'.$album->artist.'</span>&nbsp;|&nbsp;';
+    $output .= '编号：'.$album->pubcat.'&nbsp;|&nbsp;';
+    $output .= '发行商：'.$album->pubcom.'&nbsp;|&nbsp;';
+    $output .= '发行日期：<span class="pubdate">'.$album->pubdate.'</span>';
+    $output .= ($album->price ? '&nbsp;|&nbsp;定价：'.$album->price.'日元（含税）' : '');
+    $output .= '&nbsp;|&nbsp;出自：<span class="source">'.$source.'</span>';
+    $output .= '<span class="type" style="display:none;">'.$album_types[$album->type].'</span>';
+    $output .= '</div>';
+    $output .= '<div class="brief">'.discography_truncate_lyric($album->brief, 'bakayaro', 250).'</div></div></div></div>';
+    $count++;
+  }
+
+  return $output;
+}
+
+/**
+* Theme of track list page.
+*/
+function theme_discography_track_list($variables) {
+  $tracks = $variables['tracks'];
+  //return print_r($tracks, true);
+  $output = '';
+
+  //取得所有歌词
+  $lyrics = array();
+  $imgpath = drupal_get_path('module', 'discography').'/img/';
+
+  $result = db_query("SELECT lid, aid, did,tid FROM {discography_lyric} WHERE moderate = 1");
+  foreach ($result as $lyric) {
+    $lyrics[$lyric->aid][$lyric->did][$lyric->tid] = $lyric->lid;
+  }
+
+  //过滤器
+  $filter = array('album' => array('-' => '全部专辑'));
+
+  $count = 0;
+  $output = '';
+  foreach ($tracks as $track) {
+    if ($track->tid == 0) {
+      continue;
+    }
+    if (!isset($track->atitle)) {
+      $album = discography_album_load($track->aid);
+      $track = $album->tracks[$track->did][$track->tid];
+    }
+    $output .= '<div class="list track"><div class="track-list">';
+    $output .= '<div class="track-list-title">';
+    $output .= '<h3>'.check_plain($track->title).'</h3>';
+    $output .= '<span class="track-list-album">（来自专辑：'.l($track->atitle, 'discography/'.$track->path, array('attributes' => array('class' => array('album')))).' 第<em>'.$track->did.'</em>碟 / 第<em>'.$track->tid.'</em>曲）</span>';
+    $output .= '<span class="lyric">'.(isset($lyrics[$track->aid][$track->did][$track->tid]) ? l('<img alt="查看歌词" src="/'.$imgpath.'lyric.gif" />', "discography/lyric/$track->aid/$track->did/$track->tid/popup", array("html" => true, "attributes" => array("rel" => 'facebox'))) : '').'</span>';
+    $output .= '</div>';
+    $output .= '<div class="track-list-artists">';
+    isset($track->composer) ? $artists_output[] = '作曲：'.$track->composer : NULL;
+    isset($track->arranger) ? $artists_output[] = '编曲：'.$track->arranger : NULL;
+    isset($track->lyricist) ? $artists_output[] = '作词：'.$track->lyricist : NULL;
+    isset($track->performer) ? $artists_output[] = '歌手：'.$track->performer : NULL;
+    $output .= implode('&nbsp; | &nbsp;', $artists_output);
+    unset($artists_output);
+    $output .= '</div></div></div>';
+    $count++;
+  }
+  return $output;
+}
+
+
+/**
+ * Build a filter form for list page.
+ */
+function discography_list_filter($form, &$form_state, $filter) {
+  //$form = array('#theme' => 'discography_list_filter');
+  foreach ($filter as $id => $options) {
+    $form[$id]= array('#type' => 'select', '#options' => $options,);
+  }
+  return $form;
+}
+
+/**
+* Implements hook_node_validate().
+*/
+function discography_node_validate($node, $form) {
+  if ($node->type == 'discography_list') {
+    $language = array_key_exists($form['#node']->language, $node->field_sqlwhere) ? $form['#node']->language : 'und';
+    $sqlwhere = $node->field_sqlwhere[$language][0]['value'];
+    $sqlorder = $node->field_sqlorder[$language][0]['value'];
+    $nodelist = $node->field_nodelist[$language][0]['value'];
+    $listtype = $node->field_listtype[$language][0]['value'];
+
+    $list = discography_list_build_list($sqlwhere, $sqlorder, $nodelist, $listtype);
+    if (isset($list['#markup']) && $list['#markup'])
+      form_set_error('field_sqlwhere', $list['#markup']);
+  }
+}
+
+/**
+* Implements  hook_node_view().
+*/
+function discography_node_view($node, $viewmode, $langcode) {
+  if ($node->type == 'story') {
+        $breadcrumb[] = l(t('Home'), NULL);
+				$breadcrumb[] = l('资料文章', 'archive');
+				if ($viewmode == 'full') {
+          $taxonomy = reset($node->taxonomy_vocabulary_1);
+          unset($node->content['taxonomy_vocabulary_1']);
+					$breadcrumb[] = l($taxonomy[0]['taxonomy_term']->name, 'taxonomy/term/'.$taxonomy[0]['taxonomy_term']->tid);
+				}
+				drupal_set_breadcrumb($breadcrumb);
+  } else if ($viewmode == 'full' && $node->type == 'page' && drupal_get_path_alias($node->uri['path'])) {
+    drupal_add_feed('archive/feed', 'RSS - 资料文章');
+  }
+  if ($node->type == 'discography_list') {
+    drupal_add_js(drupal_get_path('module', 'discography').'/js/discography.js');
+    // should be removed
+    $langcode = array_key_exists($langcode, $node->field_sqlwhere) ? $langcode : 'und';
+    
+    $sqlwhere = isset($node->field_sqlwhere[$langcode][0]['value']) ? $node->field_sqlwhere[$langcode][0]['value'] : '';
+    $sqlorder = isset($node->field_sqlorder[$langcode][0]['value']) ? $node->field_sqlorder[$langcode][0]['value'] : '';
+    $nodelist = isset($node->field_nodelist[$langcode][0]['value']) ? $node->field_nodelist[$langcode][0]['value'] : '';
+    $listtype = isset($node->field_listtype[$langcode][0]['value']) ? $node->field_listtype[$langcode][0]['value'] : 0;
+    
+    // 生成列表（待使用cache）
+    $node->content['list'] = discography_list_build_list($sqlwhere, $sqlorder, $nodelist, $listtype);
+    $node->content['list']['#weight'] = 1.5;
+  }
+}
+
+/**
+* Implements  hook_node_insert().
+*/
+function discography_node_insert($node) {
+  if ($node->type == 'story') {
+    discography_add_event('添加文章「'. $node->title.'」', 'node/'. $node->nid);
+  }
+}
+
+/**
+* Implements  hook_node_update().
+*/
+function discography_node_update($node) {
+  if ($node->type == 'story') {
+    discography_add_event('更新文章「'. $node->title.'」', 'node/'. $node->nid);
+  }
+}
+
+/**
+* Implements  hook_node_delete().
+*/
+function discography_node_delete($node) {
+  if ($node->type == 'story') {
+    discography_add_event('删除文章「'. $node->title.'」', 'node/'. $node->nid);
+  }
+}
+
+/**
+ * Build infomation required by archive block.
+ */
+function discography_block_archive($type = 'info', $delta = '') {
+  $vid = 1;
+  $tree = taxonomy_get_tree($vid);
+  
+  $blocks = array();
+
+  foreach($tree as $term) {
+    $id = 'archive_block_'.$term->tid;
+    $blocks[$id]['delta'] = $id;
+    $blocks[$id]['name'] = '资料文章-'.$term->name;
+  }
+
+  if ($type == 'info') return $blocks;
+
+  $tid = substr($delta, 14);
+
+  $query = db_select('node', 'n')
+    ->condition('n.status', 1)
+    ->condition('tn.tid', $tid)
+    ->orderBy('n.created', 'DESC')
+    ->fields('n', array('title', 'nid'))
+    ->range(0, 5);
+  $query->innerJoin('taxonomy_index', 'tn', 'n.nid = tn.nid');
+  $result = $query->execute();
+  if ($result->rowCount() == 0) return NULL;
+
+  $items = array();
+  foreach( $result as $archive) {
+    $items[] = l($archive->title, 'node/'.$archive->nid);
+  }
+
+  $imgpath = drupal_get_path('module', 'discography').'/img/';
+  $title_images = array(1 => 'essay.gif', 3 => 'critique.gif', 2 => 'interview.gif', 4 => 'research.gif');
+  $descriptions[1] = "Newtype杂志上连载的菅野よう子随笔。";
+  $descriptions[3] = "Fans的音乐评论。";
+  $descriptions[2] = "YK访谈文章翻译。";
+  $descriptions[4] = "音乐背后的点点滴滴。";
+
+  return array(
+    //'#prefix' => '<div class="">',
+    'image' => array('#theme' => 'image', '#path' => $imgpath.$title_images[$tid], '#alt' => $blocks[$delta]['name']),
+    'description' => array(
+      '#markup' => $descriptions[$tid].l('<img src="'.$imgpath.'/more.gif" style="margin-bottom:-3px" alt="更多本分类文章" />', 'taxonomy/term/'.$tid, array('html' => true)),
+      '#prefix' => '<div class="description">', 
+      '#suffix' => '</div>'
+    ),
+    'list' => array('#theme' => 'item_list', '#items' => $items),
+  );
+}
+
+/**
+* Implements hook_block_info().
+*/
+function discography_block_info() {
+  $blocks['news'] = array(
+    'info' => '最新新闻',
+    'cache' => DRUPAL_CACHE_GLOBAL, //Default
+  );
+  $blocks['new-albums'] = array(
+    'info' => '最新专辑',
+    'cache' => DRUPAL_CACHE_GLOBAL, //Default
+  );
+  $blocks['new-articles'] = array(
+    'info' => '最新文章',
+    'cache' => DRUPAL_CACHE_GLOBAL, //Default
+  );
+  $blocks['new-lyrics'] = array(
+    'info' => '最新歌词',
+    'cache' => DRUPAL_CACHE_GLOBAL, //Default
+  );
+  $blocks['list-filter'] = array(
+    'info' => '过滤器',
+    'cache' => DRUPAL_CACHE_GLOBAL, //Default
+  );
+  $blocks['list-lists'] = array(
+    'info' => '其它列表',
+    'cache' => DRUPAL_CACHE_GLOBAL, //Default
+  );
+  $blocks['search'] = array(
+    'info' => '作品搜索',
+    'cache' => DRUPAL_CACHE_GLOBAL, //Default
+  );
+  $archive_blocks = discography_block_archive('info');
+  foreach ($archive_blocks as $archive_block) {
+    $blocks[$archive_block['delta']] = array(
+      'info' => $archive_block['name'],
+      'cache' => DRUPAL_CACHE_GLOBAL, //Default
+      'visibility' => BLOCK_VISIBILITY_LISTED,
+      'pages' => 'archive',
+    );
+  }
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function discography_block_view($delta = '') {
+  $block = array();
+
+  switch($delta){
+    case 'news':
+      $block['content'] = discography_block_news();
+      break;
+    case 'new-albums':
+      $block['content'] = discography_block_new_albums();
+      break;
+    case 'new-articles':
+      $block['content'] = discography_block_new_articles();
+      break;
+    case 'new-lyrics':
+      $block['content'] = discography_block_new_lyrics();
+      break;
+    case 'list-filter':
+      $block['subject'] = '过滤显示';
+      $block['content'] = drupal_get_form('discography_block_list_filter');
+      break;
+    case 'list-lists':
+      $block['subject'] = '全部列表';
+      $block['content'] = discography_block_list_lists();
+      break;
+    case 'search':
+      //$block['subject'] = '作品搜索';
+      $block['content'] = disocgraphy_block_discography_search();
+  }
+  // Auto create archive blocks.
+  if (substr($delta, 0, 13) == 'archive_block') {
+    $block['content'] = discography_block_archive('content', $delta);
+  }
+
+  return $block;
+}
+
+/**
+ * Contents of top page news block.
+ */
+function discography_block_news() {
+  $imgpath = drupal_get_path('module', 'discography').'/img/';
+
+  $result = db_select('aggregator_item', 'i')
+    ->condition('i.fid', 1)
+    ->fields('i', array('title', 'link', 'timestamp'))
+    ->orderBy('timestamp', 'DESC')
+    ->orderBy('iid', 'DESC')
+    ->range(0, 10)
+    ->execute();
+  $items = array();
+  while($item = $result->fetch()) {
+    $items[] = l(strip_tags($item->title), $item->link, array('attributes' => array('class' => 'item-title'))).'<span>'.format_date($item->timestamp, 'custom', 'Y年m月d日').'</span>';
+  }
+  if (count($items) > 0) {
+    $output = theme('item_list', array('items' => $items));
+  }
+
+  $block_array['block_contents'] = array(
+      '#theme' => 'discography_top_block',
+      'title' => "最新消息",
+      'title_image' => $imgpath . 'news.gif',
+      'content' => $output,
+    );
+  return $block_array;  
+
+  $output = '<div class="news" ><h3><img src="'.$imgpath.'news.gif" alt="最新消息" /></h3>';
+  $output .= '<div id="newPosts">';
+	//feed
+  
+  if (count($items) > 0) {
+    $output .= theme('item_list', array('items' => $items));
+  }
+  //$items = aggregator_feed_items_load('source', aggregator_feed_load(1));
+	//$result = db_query_range('SELECT * FROM {aggregator_item} WHERE fid = :fid ORDER BY timestamp DESC, iid DESC', 1, 0, array(':fid' => 1));
+	//$items = array();
+	//foreach ($result as $item)) {
+		//$items[] = l(strip_tags($item->title), $item->link, array('attributes' => array('class' => 'item-title'))).'<span>'.format_date($item->timestamp, 'custom', 'Y年m月d日').'</span>';
+	//}
+	//$output .= theme('item_list', $items);
+	
+	$output .= '</div></div>';
+	//$output .= '</div>';
+	$output .= '<div class="rss"><a href="http://blog.ykfan.cn"><img src="'. $imgpath .'blog.gif" alt="访问YK新闻博客" /></a> <div id="subscribe"><img src="'. $imgpath .'subscribe.gif" alt="subscribe" />
+<ol><!-- Feedsky FEED发布代码开始 -->
+<li><a href="http://fusion.google.com/add?feedurl=http://feed.feedsky.com/ykfanblog"><img src="http://www.ykfan.cn/links/google.png" alt="订阅到 Google Reader" /></a></li>
+<li><a href="http://www.zhuaxia.com/add_channel.php?url=http://feed.feedsky.com/ykfanblog"><img src="http://www.ykfan.cn/links/zhuaxia.png" alt="订阅到抓虾" /></a></li>
+<li><a href="http://www.xianguo.com/subscribe.php?url=http://feed.feedsky.com/ykfanblog"><img src="http://www.ykfan.cn/links/xianguo.png" alt="订阅到鲜果"  /></a></li>
+<li><a href="http://www.bloglines.com/sub/http://feed.feedsky.com/ykfanblog"><img src="http://www.ykfan.cn/links/bloglines.png" alt="订阅到Blogline" /></a></li>
+<!-- Feedsky FEED发布代码结束 --></ol></div>';
+  $output .= '<a href="http://feed.feedsky.com/ykfanblog"><img src="'.$imgpath.'rss.gif" alt="RSS2.0源" /></a></div>';
+  return $output;
+}
+
+/**
+ * Contents of top page new albums block.
+ */
+function discography_block_new_albums() {
+  $imgpath = drupal_get_path('module', 'discography').'/img/';
+  $output = '';
+  $albums = array();
+
+  $result = db_select('discography_album', 'a')->fields('a', array('aid'))->orderBy('pubdate', 'DESC')->range(0, 4)->execute();
+  while($aid = $result->fetchField()) {
+    $albums[$aid] = discography_album_load($aid);
+  }
+
+  $block_array['block_contents'] = array(
+      '#theme' => 'discography_top_block_album',
+      'title' => "最新专辑",
+      'title_image' => $imgpath . 'recentcd.gif',
+      'albums' => $albums,
+    );
+  return $block_array;  
+}
+
+/**
+ * Contents of top page new artichles block.
+ */
+function discography_block_new_articles() {
+  $imgpath = drupal_get_path('module', 'discography').'/img/';
+  $articles = array();
+
+  $result = db_select('node', 'n')
+    ->condition('n.type', 'story')
+    ->fields('n', array('nid', 'title'))
+    ->orderBy('changed', 'DESC')
+    ->range(0, 10)
+    ->execute();
+
+  while($article = $result->fetch()) {
+    $articles[] = l($article->title, 'node/'.$article->nid);
+  }
+  $block_array['block_contents'] = array(
+      '#theme' => 'discography_top_block',
+      'title' => "最新文章",
+      'title_image' => $imgpath . 'newarticles.gif',
+      'content' => theme('item_list', array('items' => $articles)),
+    );
+  return $block_array;  
+}
+
+/**
+ * Contents of top page new lyrics block.
+ */
+function discography_block_new_lyrics() {
+  $imgpath = drupal_get_path('module', 'discography').'/img/';
+  
+  $lyrics = array();
+
+  $query = db_select('discography_lyric', 'l')
+    ->condition('l.moderate', 1)
+    ->orderBy('l.changed', 'DESC')
+    ->range(0, 10);
+  $query->innerJoin('discography_album', 'a', 'l.aid = a.aid');
+  $query->innerJoin('discography_track', 't', 'l.tid = t.tid');
+  $query->addField('t', 'title', 't_title');
+  $query->addField('a', 'title', 'a_title');
+  $query->addField('a', 'path', 'path');
+  $result = $query->execute();
+
+  while($lyric = $result->fetch()) {
+    $lyrics[] = l($lyric->a_title .' - '. $lyric->t_title, 'discography/'.$lyric->path);
+  }
+
+  $block_array['block_contents'] = array(
+      '#theme' => 'discography_top_block',
+      'title' => "最新歌词",
+      'title_image' => $imgpath . 'newlyrics.gif',
+      'content' => theme('item_list', array('items' => $lyrics)),
+    );
+  return $block_array;  
+}
+
+
+/**
+ * Contents of list page filter form block.
+ */
+function discography_block_list_filter($form, &$form_state) {
+  $node = node_load(arg(1));
+  $field_sqlwhere = end($node->field_sqlwhere);
+  if (!$field_sqlwhere[0]['value']) {
+    return NULL;
+  }
+  $field_listtype = end($node->field_listtype);
+  if ($field_listtype[0]['value'] == 0) {
+    $filters = array(
+      'artist' => array('-' => '♪全部艺术家♪'),
+      'pubdate' => array('-' => '♪全部年份♪'),
+      'type' => array('-' => '♪全部类别♪'),
+      'source' => array('-' => '♪全部出处♪'),
+    );
+  } else {
+    $filters = array(
+      'album' => array('-' => '♪全部专辑♪'),
+    );
+  }
+
+  foreach ($filters as $id => $options) {
+    $form['filters'][$id]= array('#type' => 'select', '#attributes' => array('style' => 'width:150px;'), '#options' => $options,);
+  }
+  
+  $form['filters']['#prefix'] = '显示来自：';
+  $form['filters']['#suffix'] = $field_listtype[0]['value'] ? '的曲目共<span id="list-count"></span>首。' : '的专辑共<span id="list-count"></span>张。';
+  return $form;
+}
+
+/**
+ * Contents of list page all lists block.
+ */
+function discography_block_list_lists() {
+  $result = db_select('node', 'n')->fields('n', array('nid'))->condition('n.type', 'discography_list')->execute();
+  $items = array();
+  foreach($result as $nid) {
+    $node = node_load($nid->nid);
+    $active = current_path() == 'node/'.$node->nid ? 'active' : '';
+    $items[] = array('data' => l($node->title, 'node/'.$node->nid), 'class' => array($active));
+  }
+  return array('#theme' => 'item_list', '#items' => $items);
+}
+
+/**
+ * Contents of discography search block.
+ */
+function disocgraphy_block_discography_search() {
+  return drupal_get_form('disocgraphy_discography_search_form');
+}
+
+function disocgraphy_discography_search_form($form, &$form_state) {
+  drupal_add_js(drupal_get_path('module', 'discography') . '/js/discography.js');
+
+  $key = isset($_GET['keyword']) ? $_GET['keyword'] : '搜索专辑/曲目/艺术家/歌词';
+  $form['search'] = array(
+    '#type' => 'textfield',
+    '#title_display' => 'invisible',
+    '#title' => '搜索内容',
+    '#default_value' => $key,
+    '#size' => 25,
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => '搜索',
+  );
+  return $form;
+}
+
+function disocgraphy_discography_search_form_submit($form, &$form_state) {
+  if ($form_state['values']['search'] != '搜索专辑/曲目/艺术家/歌词') {
+    drupal_goto('discography/search', array('query' => array(array('keyword' => trim($form_state['values']['search'])))));
+  }
+}
+
+/**
+ * Theme of Top page block.
+ */
+function theme_discography_top_block($variables = array()) {
+  $output = '<h3>' .$variables['contents']['title']. '</h3>';
+  $output .= $variables['contents']['content'];
+  return $output;
+}
+
+/**
+ * Theme of Top album list block.
+ */
+function theme_discography_top_block_album($vars = array()) {
+  //$output = '<div class="topblock">';
+  $output = '<h3>' .$vars['contents']['title']. '</h3>';
+  //$output .= '<div class="content">';
+  $i = 1;
+  foreach($vars['contents']['albums'] as $aid => $album) {
+    $omega = $i == 1 ? 'alpha' : ($i==4 ? 'omega' : '');
+    $output .= '<div class="album grid-3 '.$omega.'"><div class="album-main"><div class="cover">';
+    if ($album->cover)
+      $output .= l(theme('image_style', array('style_name' => 'thumbnail', 'path' => 'public://covers/cover_'.$album->aid.'.jpg', 'alt' => '专辑封面')), 'discography/'. $album->path, array('html' => TRUE));
+    else  
+      $output .= l(theme('image', array('path' => 'public://covers/nocover_thumb.gif', 'alt' => '专辑封面')), 'discography/'. $album->path, array('html' => TRUE));
+    $output .= '</div>';
+    $output .= '<div class="title">'.l($album->title, 'discography/'.$album->path, array('attributes' => array('title' => $album->title))).'</div></div>';
+    $output .= '<div class="artist">'.$album->artist.'</div>';
+    $pubdate = strtotime($album->pubdate);
+    $output .= '<div class="pubdate">'.format_date($pubdate, 'custom', 'Y年m月n日').'</div>';
+    $output .= '<div class="pubstate">'.($pubdate > time() ? ' 发售予定' : ' 发售中').'</div>';
+    $output .= '</div>';
+    $i++;
+  }
+  //$output .= '</div></div>';
+  return $output;
+}
+
+/**
+* Top page content of this site. Null is fine.
+*/
+function discography_top_page() {
+  return "";
+}
+
+/**
+ * Rss feed page of archives.
+ */
+function discography_archive_feed_page() {
+	$result = db_query("SELECT nid FROM {node} WHERE type='story' ORDER BY created DESC");
+	$items = array();
+	while ($node = $result->fetch()) {
+		$items[] = $node->nid;
+	}
+	
+	$channel['link'] = url('archive', array('absolute' => TRUE));
+	$channel['title'] = variable_get('site_name', 'Drupal') .' - 资料文章';
+	$channel['description'] = '菅野よう子相关资料文章归档';
+
+	node_feed($items, $channel);
+}
+ 
+ /**
+  * Add a event record for administration in YKFan.
+  */
+function discography_add_event($content, $path) {
+  db_insert('discography_event')
+    ->fields(array(
+      'content' => $content,
+      'path' => $path,
+      'timestamp' => time(),
+    ))
+    ->execute();
+}
+
+/**
+  * List all recent administration.
+  */
+function discography_lastupdate_page() {
+	$result = db_query("SELECT * FROM {discography_event} ORDER BY timestamp DESC");
+	$events = array();
+	while ($event = db_fetch_object($result)) {
+		$events[]['data'] = l($event->content.'于 '.format_date($event->timestamp, 'custom', 'Y年m月d日'), $event->path);
+	}
+	return theme('item_list', $events, '最近更新');
+}
+
+/**
+  * Output recent administration to RSS feed.
+  */
+function discography_lastupdate_feed_page() {
+  drupal_set_header('Content-Type: application/rss+xml; charset=utf-8');
+	
+  $items = '';
+  $result = db_query_range("SELECT * FROM {discography_event} ORDER BY timestamp DESC", 0, 50);
+	$events = array();
+	while ($event = db_fetch_object($result)) {
+		$items .= format_rss_item($event->content, $event->path, l($event->content.'于 '.format_date($event->timestamp, 'custom', 'Y年m月d日'), $event->path), array('pubDate' => date('r', $event->timestamp)));
+	}
+	
+  $output = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+  $output .= "<rss version=\"2.0\">\n";
+  $output .= format_rss_channel('YKFan最新更新', url('<front>', array('absolute' => TRUE)), 'YKFan主页的最新更新操作', $items);
+  $output .= "</rss>\n";
+
+  print $output;
+}
+
+/**
+ * Rebuild all count data.
+ */
+function discography_rebuild_stat() {
+  $stats[] = db_query("SELECT COUNT(aid) FROM {discography_album}")->fetchField();
+  $stats[] = db_query("SELECT COUNT(aid) FROM {discography_track} WHERE tid <> 0")->fetchField();
+  $stats[] = db_query("SELECT COUNT(DISTINCT name) FROM {discography_artist}")->fetchField();
+  $stats[] = db_query("SELECT COUNT(lid) FROM {discography_lyric}")->fetchField();
+  $stats[] = db_query("SELECT COUNT(lid) FROM {discography_lyric} WHERE language = 2")->fetchField();
+
+  variable_set('discography_stats', $stats);
+  return ;
+}
+
+/**
+* Truncate lyric with specify count and highlight keyword.
+*
+* @param $content
+*   Content to be truncate.
+* @param $keyword
+*   Keyword to be highlight.
+* @param $count
+*   Count.
+* @return
+*   Truncated and highlighted content.
+*/
+function discography_truncate_lyric($content, $keyword, $count = 200) {
+  $content = filter_xss($content, array());
+  $len = mb_strlen($content);
+  $fistpos = mb_strpos(mb_strtoupper($content), mb_strtoupper($keyword));
+  $from = $fistpos - 10 > 0 ? $fistpos - 10 : 0;
+  $long = $fistpos - 10 + $count < $len ? $count : $len - $from;
+  $content = mb_substr($content, $from, $long);
+  $content = preg_replace("($keyword)", '<span style="background-color:yellow">\\1</span>', $content);
+  return ($from == 0 ? '' : '...').$content.($long < $count ? '' : '...');
+}
+
+/**
+ * Set breadcrumb for custom admin page.
+ */
+function discography_set_admin_breadcrumb() {
+  $breadcrumb[] = l('首页', NULL);
+  $breadcrumb[] = l('管理', 'discography/admin');
+  drupal_set_breadcrumb($breadcrumb);
+}
